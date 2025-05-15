@@ -68,12 +68,6 @@ def load_models():
     }
 
 models = load_models()
-
-def display_pdf(file_path):
-    with open(file_path, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-    return f'<embed src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" type="application/pdf">'
-
 # PDF Processing Functions
 def process_page(_args):
     page_num, pdf_path = _args
@@ -206,7 +200,7 @@ with st.sidebar:
             st.error(f"PDF processing failed: {str(e)}")
 
 # Main content area
-col1, col2 = st.columns([0.5, 0.5], gap="medium")
+col1, col2 = st.columns([0.0, 1], gap="small")
 
 # Left pane - PDF Viewer
 with col1:
@@ -242,7 +236,7 @@ with col2:
     if st.session_state.show_save_dialog:
         with st.form("Save Note"):
             note_name = st.text_input("Note name", value=st.session_state.current_note['query'][:50])
-            col1, col2 = st.columns([0.3, 0.7])
+            col1, col2 = st.columns([0.0, 1.0])
             with col1:
                 if st.form_submit_button("🗕️ Save"):
                     st.session_state.notes.append({
