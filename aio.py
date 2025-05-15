@@ -274,18 +274,49 @@ with col2:
 with st.expander("📚 Saved Notes", expanded=False):
     if st.session_state.notes:
         for idx, note in enumerate(st.session_state.notes):
-            with st.container(border=True):
-                col1, col2 = st.columns([0.8, 0.2])
-                with col1:
-                    st.markdown(f"### {note['name']}")
+            # Track which note is in edit mode using session_state
+            edit_key = f"edit_mode_{idx}"
+            if edit_key not in st.session_state:
+                st.session_state[edit_key] = False
+            
+            with st.expander(note['name'], expanded=False):
+                if st.session_state[edit_key]:
+                    # Editable form fields
+                    new_name = st.text_input("Note name", value=note['name'], key=f"name_{idx}")
+                    new_query = st.text_area("Question", value=note['query'], key=f"query_{idx}")
+                    new_response = st.text_area("Response", value=note['response'], key=f"response_{idx}")
+
+                    col1, col2 = st.columns([1, 1])
+                    with col1:
+                        if st.button("💾 Save Changes", key=f"save_{idx}"):
+                            # Save edits back to session_state.notes
+                            st.session_state.notes[idx] = {
+                                'name': new_name.strip() or note['name'],  # fallback to old name if empty
+                                'query': new_query.strip() or note['query'],
+                                'response': new_response.strip() or note['response']
+                            }
+                            st.session_state[edit_key] = False
+                            st.experimental_rerun()
+                    with col2:
+                        if st.button("❌ Cancel", key=f"cancel_{idx}"):
+                            st.session_state[edit_key] = False
+                            st.experimental_rerun()
+                else:
+                    # Display saved note
                     st.markdown(f"**Question:** {note['query']}")
                     st.markdown(f"**Response:** {note['response']}")
-                with col2:
-                    if st.button("🗑️ Delete", key=f"delete_{idx}"):
-                        del st.session_state.notes[idx]
-                        st.rerun()
+                    col1, col2, col3 = st.columns([0.6, 0.2, 0.2])
+                    with col1:
+                        if st.button("✏️ Edit", key=f"edit_{idx}"):
+                            st.session_state[edit_key] = True
+                            st.experimental_rerun()
+                    with col2:
+                        if st.button("🗑️ Delete", key=f"delete_{idx}"):
+                            del st.session_state.notes[idx]
+                            st.experimental_rerun()
     else:
         st.info("Saving Notes Feature is not available due to Streamlit constraints, Contact me for a Full Live Demo")
+
 
 # Health check
 if st.button("Check System Health"):
