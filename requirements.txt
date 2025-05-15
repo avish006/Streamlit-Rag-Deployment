@@ -3,7 +3,7 @@ python-dotenv==1.0.1
 unstructured[local-inference]==0.15.0
 rank_bm25==0.2.2
 nltk==3.8.1
-sentence_transformers==3.0.1
+sentence_transformers==2.6.0
 faiss-cpu==1.8.0
 numpy==1.26.4
 transformers==4.44.2
