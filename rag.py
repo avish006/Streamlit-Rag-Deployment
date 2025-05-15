@@ -37,7 +37,7 @@ def load_models():
         'clip_model': CLIPModel.from_pretrained("openai/clip-vit-base-patch32"),
         'clip_processor': CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32"),
         'ocr_reader': easyocr.Reader(['en'], gpu=False),
-        'openai_client': OpenAI(base_url="https://openrouter.ai/api/v1",api_key=os.get_env("OPENAI_API_KEY"),http_client=httpx.Client(timeout=30.0))
+        'openai_client': OpenAI(base_url="https://openrouter.ai/api/v1",api_key=os.get_env("OPENAI_API_KEY"),http_client=httpx.Client(timeout=300.0))
     }
 
 models = load_models()
