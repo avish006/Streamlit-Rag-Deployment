@@ -1,21 +1,43 @@
 import streamlit as st
+st.set_page_config(
+    page_title="PDF Viewer Demo",
+    layout="centered",
+    page_icon="📄"
+)
+
+import tempfile
 import base64
 
-st.set_page_config(page_title="PDF Viewer", layout="wide")
+import streamlit.components.v1 as components
 
-def display_pdf(pdf_bytes):
-    base64_pdf = base64.b64encode(pdf_bytes).decode('utf-8')
-    pdf_display = f'''
-        <iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="700" type="application/pdf"></iframe>
-    '''
-    return pdf_display
+# Set page config
 
-st.title("📄 PDF Viewer")
+st.title("📄 PDF Upload & Viewer Demo")
 
-uploaded_file = st.file_uploader("Upload a PDF file", type="pdf")
+# Function to render PDF safely using base64 + iframe (works on deployed apps)
+def display_pdf(file_path):
+    with open(file_path, "rb") as f:
+        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+    pdf_display = f"""
+        <iframe 
+            src="data:application/pdf;base64,{base64_pdf}" 
+            width="100%" 
+            height="700"
+            type="application/pdf"
+            style="border: none;"
+        ></iframe>
+    """
+    components.html(pdf_display, height=700)
+
+# Upload area
+uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
 
 if uploaded_file:
-    pdf_bytes = uploaded_file.read()
-    st.markdown(display_pdf(pdf_bytes), unsafe_allow_html=True)
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        tmp_file.write(uploaded_file.getvalue())
+        tmp_path = tmp_file.name
+
+    st.success("PDF uploaded successfully!")
+    display_pdf(tmp_path)
 else:
-    st.info("Please upload a PDF to view it here.")
+    st.info("Please upload a PDF file to view it here.")
