@@ -227,7 +227,7 @@ if st.session_state.notes:
                 del st.session_state.notes[idx]
                 st.experimental_rerun()
 else:
-    st.info("Saving notes and viewing pdfs in real time are not featured in this streamlit demo cause of streamlit usage constraints, 🟢Originally the code was written in flask (not streamlit) but cause of deployment resource constraints, this repo was made,  ⚠️To Get Live Demo Contact Me!⚠️")
+    st.info("Saving notes and viewing pdfs in real time are not featured in this streamlit demo cause of streamlit usage constraints, 🟢Originally the code was written in flask (not streamlit) but cause of deployment resource constraints used streamlit,  ⚠️To Get Live Demo Contact Me!⚠️   ")
 
 
 if st.button("Check System Health"):
