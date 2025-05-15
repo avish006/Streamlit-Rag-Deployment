@@ -22,12 +22,9 @@ from transformers import CLIPProcessor, CLIPModel
 from openai import OpenAI
 import nltk
 import easyocr
-
-# ------------------------ Init Logging -------------------------
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ------------------------ Init State ---------------------------
 def init_state():
     defaults = {
         'processed': False,
@@ -44,7 +41,6 @@ def init_state():
 
 init_state()
 
-# ------------------------ Model Load ---------------------------
 @st.cache_resource
 def load_models():
     nltk.download('punkt')
@@ -58,7 +54,6 @@ def load_models():
 
 models = load_models()
 
-# ------------------------ File Save Cache -----------------------
 @st.cache_data
 def save_uploaded_file(uploaded_file):
     temp_dir = "uploads"
@@ -68,7 +63,6 @@ def save_uploaded_file(uploaded_file):
         f.write(uploaded_file.getbuffer())
     return file_path
 
-# ------------------------ PDF Functions -------------------------
 try:
     import pymupdf as fitz
 except ImportError:
@@ -163,7 +157,6 @@ def handle_query(user_query):
     response = query_rag(user_query, index, chunks)
     return {"response": response}
 
-# ---------------------- UI Layout -------------------------
 st.title("📄 PDF Chat Assistant")
 uploaded_file = st.file_uploader("Upload PDF", type=["pdf"], help="Upload a PDF document to start chatting")
 
@@ -176,7 +169,6 @@ if uploaded_file and not st.session_state.processed:
         st.session_state.chat_history = []
         st.success("PDF processed successfully!")
 
-# ---------------------- Chat Container --------------------
 chat_container = st.container(height=600)
 
 for idx, entry in enumerate(st.session_state.chat_history):
@@ -192,7 +184,6 @@ for idx, entry in enumerate(st.session_state.chat_history):
                     st.session_state.current_note = entry
                     st.session_state.show_save_dialog = True
 
-# ---------------------- Save Note Dialog --------------------
 if st.session_state.show_save_dialog:
     with st.form("Save Note"):
         note_name = st.text_input("Note name", value=st.session_state.current_note['query'][:50])
@@ -210,7 +201,6 @@ if st.session_state.show_save_dialog:
             if st.form_submit_button("❌ Cancel"):
                 st.session_state.show_save_dialog = False
 
-# ---------------------- Query Input --------------------
 query = st.chat_input("Ask about the document...")
 if query and st.session_state.processed:
     with chat_container:
@@ -228,7 +218,6 @@ if query and st.session_state.processed:
             with st.chat_message("assistant"):
                 st.markdown(result.get('response', 'Error or empty response'))
 
-# ---------------------- Saved Notes --------------------
 if st.session_state.notes:
     for idx, note in enumerate(st.session_state.notes):
         with st.expander(note['name'], expanded=False):
@@ -238,9 +227,8 @@ if st.session_state.notes:
                 del st.session_state.notes[idx]
                 st.experimental_rerun()
 else:
-    st.info("No saved notes yet.")
+    st.info("Saving notes and viewing pdfs in real time are not featured in this streamlit demo, ⚠️To Get Live Demo Contact Me!⚠️")
 
 
-# ---------------------- Health Check --------------------
 if st.button("Check System Health"):
     st.json({"status": "healthy", "timestamp": time.time()})
